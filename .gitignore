@@ -1,0 +1,6 @@
+virtual-env/*
+dist/*
+build/*
+docs/_build/doctrees/*
+cinesync.egg-info/*
+*.pyc
