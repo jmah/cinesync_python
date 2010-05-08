@@ -2,6 +2,8 @@
 cinesync
 ========
 
+Note: This library is under development, and is not yet ready for use.
+
 
 Installation
 ------------
