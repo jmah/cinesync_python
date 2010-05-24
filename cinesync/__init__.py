@@ -78,10 +78,3 @@ def short_hash(path):
             f.seek(-SHORT_HASH_SAMPLE_SIZE / 2, os.SEEK_END)
             dgst.update(f.read(SHORT_HASH_SAMPLE_SIZE / 2))
         return dgst.hexdigest()
-
-def event_handler(fn):
-    try:
-        session = Session.load(sys.stdin)
-    except Exception:
-        session = None
-    EventHandler.call_with_fn(sys.argv, session, fn)

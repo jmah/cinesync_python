@@ -1,11 +1,15 @@
 import cinesync
 
+import sys
 from optparse import OptionParser
 
 
 class EventHandler:
-    def __init__(self, argv, session):
-        self.session = session
+    def __init__(self, argv=sys.argv, stdin=sys.stdin):
+        try:
+            self.session = cinesync.Session.load(stdin)
+        except Exception:
+            self.session = None
 
         parser = OptionParser()
         parser.add_option('--key')
@@ -24,6 +28,8 @@ class EventHandler:
     def is_offline(self):
         self.session_key == None
 
-    @classmethod
-    def call_with_fn(cls, argv, session, fn):
-        fn(cls(argv, session))
+    def __enter__(self):
+        return self
+
+    def __exit__(self, type, value, traceback):
+        pass
