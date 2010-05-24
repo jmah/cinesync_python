@@ -182,6 +182,26 @@ class XMLTest(unittest.TestCase):
         self.assertEqual(loc_elem.findtext(NS + 'shortHash'), None)
         self.assertEqual(loc_elem.findtext(NS + 'url'), mf.locator.url)
 
+    def test_writing_groups(self):
+        s = cinesync.Session()
+        s.groups = ['Draft', 'Final']
+        mf = cinesync.MediaFile('http://example.com/random_file.mov')
+        mf.groups.append('Final')
+        s.media.append(mf)
+        s.media.append(cinesync.MediaFile('http://example.com/random_file_2.mov'))
+
+        doc = ET.fromstring(s.to_xml())
+        top_groups = doc.findall(NS + 'group')
+        self.assertEqual(len(top_groups), 2)
+        self.assertTrue(any([g.text == 'Draft' for g in top_groups]))
+        self.assertTrue(any([g.text == 'Final' for g in top_groups]))
+
+        media_elems = doc.findall(NS + 'media')
+        self.assertEqual(len(media_elems[0].findall(NS + 'group')), 1)
+        self.assertEqual(media_elems[0].findtext(NS + 'group'), mf.groups[0])
+
+        self.assertEqual(len(media_elems[1].findall(NS + 'group')), 0)
+
 
 if __name__ == '__main__':
     unittest.main()
