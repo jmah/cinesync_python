@@ -206,11 +206,15 @@ class XMLTest(unittest.TestCase):
 
         self.assertEqual(len(media_elems[1].findall(NS + 'group')), 0)
 
-    def test_session_notes(self):
+    def test_writing_notes(self):
         s = cinesync.Session()
         s.notes = 'asdf'
+        mf = cinesync.MediaFile('http://example.com/random_file.mov')
+        mf.notes = 'fancy media notes!'
+        s.media.append(mf)
         doc = ET.fromstring(s.to_xml())
         self.assertEqual(doc.findtext(NS + 'notes'), s.notes)
+        self.assertEqual(doc.find(NS + 'media').findtext(NS + 'notes'), mf.notes)
 
     def test_writing_user_data(self):
         s = cinesync.Session()

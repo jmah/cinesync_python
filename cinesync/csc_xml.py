@@ -98,6 +98,7 @@ def media_file_to_xml(mf):
     elem = media_base_to_xml(mf)
     ET.SubElement(elem, 'name').text = mf.name
     elem.append(locator_to_xml(mf.locator))
+    if mf.notes: ET.SubElement(elem, 'notes').text = mf.notes
     return elem
 
 
