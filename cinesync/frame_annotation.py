@@ -17,3 +17,7 @@ class FrameAnnotation:
 
     def to_xml(self):
         return cinesync.csc_xml.frame_annotation_to_xml(self)
+
+    @classmethod
+    def load(cls, elem):
+        return cinesync.csc_xml.frame_annotation_from_xml(elem)

@@ -6,6 +6,7 @@ from StringIO import StringIO
 import xml.etree.cElementTree as ET
 
 NS = '{%s}' % cinesync.SESSION_V3_NAMESPACE
+DRAWING_OBJECT_TAGS = ['line', 'erase', 'circle', 'arrow', 'text']
 
 
 # eSession = element session {
@@ -139,6 +140,13 @@ def frame_annotation_from_xml(elem):
     frame = int(elem.get('frame'))
     ann = cinesync.FrameAnnotation(frame)
     ann.notes = elem.findtext(NS + 'notes') or ''
+    for tag in DRAWING_OBJECT_TAGS:
+        for draw_elem in elem.findall(NS + tag):
+            # Strip namespace prefix from drawing element and children
+            for e in draw_elem.getiterator():
+                if e.tag.startswith(NS):
+                    e.tag = e.tag[len(NS):]
+            ann.drawing_objects.append(draw_elem)
     return ann
 
 def frame_annotation_to_xml(ann):
@@ -146,4 +154,6 @@ def frame_annotation_to_xml(ann):
         raise cinesync.InvalidError('Cannot convert an invalid frame annotation to XML')
     elem = ET.Element('annotation', frame=str(ann.frame))
     if ann.notes: ET.SubElement(elem, 'notes').text = ann.notes
+    for xml_obj in ann.drawing_objects:
+        elem.append(xml_obj)
     return elem

@@ -148,6 +148,24 @@ class XMLTest(unittest.TestCase):
         self.assertEqual(s.media[0].user_data, 'media data')
         self.assertEqual(s.media[0].notes, 'Media notes that come first in the file')
 
+    def test_preserving_drawing_objects(self):
+        path = os.path.join('test', 'v3 files', 'v3-groups.csc')
+        with open(path) as file:
+            s = cinesync.Session.load(file)
+        self.assertEqual(s.file_version, 3)
+        self.assertEqual(s.notes, "")
+        self.assertTrue(s.is_valid())
+
+        mf = s.media[0]
+        self.assertEqual(len(mf.annotations), 13)
+        self.assertTrue(mf.annotations[1].drawing_objects[0].tag in cinesync.csc_xml.DRAWING_OBJECT_TAGS, 'Expected namespace to be stripped from drawing element')
+
+        doc = ET.fromstring(s.to_xml())
+        self.assertEqual(len(doc.findall(NS + 'media')), len(s.media))
+        self.assertEqual(len(doc.findall(NS + 'group')), len(s.groups))
+        self.assertEqual(len(doc.find(NS + 'media').findall(NS + 'annotation')), 13)
+        first_ann_elem = doc.find(NS + 'media').find(NS + 'annotation')
+
     def test_writing_basic(self):
         s = cinesync.Session()
         path = '/path/to/nonexistent/file.mov'
