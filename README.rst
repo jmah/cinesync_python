@@ -5,7 +5,7 @@ cinesync
 Note: This library is under development, and is not yet ready for use.
 
 
-Installation
+Installation (NOT YET AVAILABLE)
 ------------
 
 The easiest way to get cinesync is if you have setuptools_ installed::
