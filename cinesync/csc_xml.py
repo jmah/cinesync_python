@@ -68,7 +68,6 @@ def media_from_xml(elem):
 def init_media_common(elem, media_obj):
     media_obj.user_data = elem.get('userData') or ''
     media_obj.active = elem.get('active') == 'true'
-    media_obj.notes = elem.findtext(NS + 'notes') or ''
     media_obj.groups = [grp.text for grp in elem.findall(NS + 'group')]
     media_obj.current_frame = int(elem.get('currentFrame') or 1)
 
@@ -77,6 +76,7 @@ def media_file_from_xml(elem):
     init_media_common(elem, mf)
     mf.name = elem.findtext(NS + 'name')
     mf.locator = cinesync.MediaLocator.load(elem.find(NS + 'locators'))
+    mf.notes = elem.findtext(NS + 'notes') or ''
     return mf
 
 def group_movie_from_xml(elem):

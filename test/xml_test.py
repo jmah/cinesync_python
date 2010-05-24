@@ -63,6 +63,7 @@ class XMLTest(unittest.TestCase):
         self.assertEqual(s.media[2].current_frame, 1)
         self.assertEqual(s.media[2].user_data, 'myPrivateInfo')
         self.assertEqual(s.media[2].groups, [])
+        self.assertEqual(s.media[2].notes, 'These notes on the last movie.')
 
     def test_loading_group_movie(self):
         path = os.path.join('test', 'v3 files', 'v3-refmovie.csc')
