@@ -32,6 +32,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 """
 
+from __future__ import with_statement
+
 __author__ = 'Jonathon Mah <jmah@cinesync.com>'
 __version__ = '0.1'
 
