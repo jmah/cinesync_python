@@ -20,7 +20,8 @@ def session_to_xml(sess):
     if not sess.is_valid():
         raise cinesync.InvalidError('Cannot convert an invalid session to XML')
     root = ET.Element('session', xmlns=cinesync.SESSION_V3_NAMESPACE,
-                      version=str(cinesync.SESSION_V3_XML_FILE_VERSION))
+                      version=str(cinesync.SESSION_V3_XML_FILE_VERSION),
+                      sessionFeatures=sess.get_session_features())
     for media_file in sess.media:
         root.append(media_file.to_xml())
     for grp_name in sess.groups:
