@@ -19,7 +19,11 @@ NS = '{%s}' % cinesync.SESSION_V3_NAMESPACE
 def session_to_xml(sess):
     if not sess.is_valid():
         raise cinesync.InvalidError('Cannot convert an invalid session to XML')
-    return '<?xml version="1.0" ?><session xmlns="%s" version="%d"></session>' % (cinesync.SESSION_V3_NAMESPACE, cinesync.SESSION_V3_XML_FILE_VERSION)
+    root = ET.Element('session', xmlns=cinesync.SESSION_V3_NAMESPACE,
+                      version=str(cinesync.SESSION_V3_XML_FILE_VERSION))
+    for media_file in sess.media:
+        root.append(media_file.to_xml())
+    return ET.tostring(root)
 
 
 def session_from_xml(str_or_file, silent=False):
@@ -75,6 +79,22 @@ def group_movie_from_xml(elem):
     init_media_common(elem, gm)
     return gm
 
+def media_base_to_xml(media):
+    elem = ET.Element('media')
+    if media.user_data: elem.set('userData', media.user_data)
+    if media.active: elem.set('active', 'true')
+    if media.current_frame != 1: elem.set('currentFrame', media.current_frame)
+
+    for group_name in media.groups:
+        ET.SubElement(elem, 'group').text = group_name
+    return elem
+
+def media_file_to_xml(mf):
+    elem = media_base_to_xml(mf)
+    ET.SubElement(elem, 'name').text = mf.name
+    elem.append(locator_to_xml(mf.locator))
+    return elem
+
 
 # eLocator |= element path       { tFilePath }
 # eLocator |= element shortHash  { tShortHash }
@@ -86,3 +106,10 @@ def media_locator_from_xml(elem):
     if elem.findtext(NS + 'shortHash'):  loc.short_hash = elem.findtext(NS + 'shortHash')
     if elem.findtext(NS + 'url'): loc.url = elem.findtext(NS + 'url')
     return loc
+
+def locator_to_xml(loc):
+    if not loc.is_valid():
+        raise cinesync.InvalidError('Cannot convert an invalid locator to XML')
+    elem = ET.Element('locators')
+    if loc.path: ET.SubElement(elem, 'path').text = loc.path
+    return elem

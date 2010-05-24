@@ -142,6 +142,20 @@ class XMLTest(unittest.TestCase):
         self.assertEqual(s.media[0].user_data, 'media data')
         self.assertEqual(s.media[0].notes, 'Media notes that come first in the file')
 
+    def test_writing_basic(self):
+        s = cinesync.Session()
+        path = '/path/to/nonexistent/file.mov'
+        s.media.append(cinesync.MediaFile(path))
+        xml = s.to_xml()
+        self.assertTrue(xml)
+        doc = ET.fromstring(xml)
+        self.assertEqual(doc.tag, NS + 'session')
+        self.assertEqual(len(doc.findall(NS + 'media')), 1)
+        media_elem = doc.find(NS + 'media')
+        self.assertEqual(len(media_elem.findall(NS + 'group')), 0)
+        path_elem = media_elem.find('.//%slocators/%spath' % (NS, NS))
+        self.assertEqual(path_elem.text, path)
+
 
 if __name__ == '__main__':
     unittest.main()
