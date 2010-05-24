@@ -1,3 +1,5 @@
+import cinesync
+
 import types
 
 
@@ -12,3 +14,6 @@ class FrameAnnotation:
 
     def is_valid(self):
         return isinstance(self.frame, (types.IntType, types.LongType)) and self.frame >= 1
+
+    def to_xml(self):
+        return cinesync.csc_xml.frame_annotation_to_xml(self)

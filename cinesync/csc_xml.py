@@ -99,6 +99,9 @@ def media_file_to_xml(mf):
     ET.SubElement(elem, 'name').text = mf.name
     elem.append(locator_to_xml(mf.locator))
     if mf.notes: ET.SubElement(elem, 'notes').text = mf.notes
+    for ann in mf.annotations.values():
+        if not ann.is_default():
+            elem.append(ann.to_xml())
     return elem
 
 
@@ -120,4 +123,17 @@ def locator_to_xml(loc):
     if loc.path: ET.SubElement(elem, 'path').text = loc.path
     if loc.short_hash: ET.SubElement(elem, 'shortHash').text = loc.short_hash
     if loc.url: ET.SubElement(elem, 'url').text = loc.url
+    return elem
+
+
+# eFrameAnnotation = element annotation {
+#   attribute frame { tFrameNumber } &
+#   eNotes? &
+#   eObject* }
+
+def frame_annotation_to_xml(ann):
+    if not ann.is_valid():
+        raise cinesync.InvalidError('Cannot convert an invalid frame annotation to XML')
+    elem = ET.Element('annotation', frame=str(ann.frame))
+    if ann.notes: ET.SubElement(elem, 'notes').text = ann.notes
     return elem

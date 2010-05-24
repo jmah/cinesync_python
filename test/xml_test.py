@@ -227,6 +227,17 @@ class XMLTest(unittest.TestCase):
         self.assertEqual(doc.get('userData'), s.user_data)
         self.assertEqual(doc.find(NS + 'media').get('userData'), mf.user_data)
 
+    def test_writing_frame_notes(self):
+        s = cinesync.Session()
+        mf = cinesync.MediaFile('http://example.com/random_file.mov')
+        mf.annotations[33].notes = 'A note on frame 33'
+        s.media.append(mf)
+
+        doc = ET.fromstring(s.to_xml())
+        ann_elem = doc.find(NS + 'media').find(NS + 'annotation')
+        self.assertEqual(ann_elem.get('frame'), str(33))
+        self.assertEqual(ann_elem.findtext(NS + 'notes'), 'A note on frame 33')
+
 
 if __name__ == '__main__':
     unittest.main()
