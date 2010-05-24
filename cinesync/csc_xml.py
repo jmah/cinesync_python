@@ -23,7 +23,7 @@ def session_to_xml(sess):
                       version=str(cinesync.SESSION_V3_XML_FILE_VERSION))
     for media_file in sess.media:
         root.append(media_file.to_xml())
-    return ET.tostring(root)
+    return ET.tostring(root, 'utf-8')
 
 
 def session_from_xml(str_or_file, silent=False):
