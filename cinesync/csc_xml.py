@@ -77,6 +77,10 @@ def media_file_from_xml(elem):
     mf.name = elem.findtext(NS + 'name')
     mf.locator = cinesync.MediaLocator.load(elem.find(NS + 'locators'))
     mf.notes = elem.findtext(NS + 'notes') or ''
+
+    for ann_elem in elem.findall(NS + 'annotation'):
+        frame = int(ann_elem.get('frame'))
+        mf.annotations[frame] = cinesync.FrameAnnotation.load(ann_elem)
     return mf
 
 def group_movie_from_xml(elem):
@@ -130,6 +134,12 @@ def locator_to_xml(loc):
 #   attribute frame { tFrameNumber } &
 #   eNotes? &
 #   eObject* }
+
+def frame_annotation_from_xml(elem):
+    frame = int(elem.get('frame'))
+    ann = cinesync.FrameAnnotation(frame)
+    ann.notes = elem.findtext(NS + 'notes') or ''
+    return ann
 
 def frame_annotation_to_xml(ann):
     if not ann.is_valid():
