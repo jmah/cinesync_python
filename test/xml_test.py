@@ -18,6 +18,7 @@ class XMLTest(unittest.TestCase):
         self.assertTrue(xml)
         doc = ET.fromstring(xml)
         self.assertEqual(doc.tag, NS + 'session')
+        self.assertEqual(int(doc.get('version')), cinesync.SESSION_V3_XML_FILE_VERSION)
 
     def test_invalid_session_fails(self):
         s = cinesync.Session()

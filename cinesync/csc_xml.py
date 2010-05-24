@@ -19,7 +19,7 @@ NS = '{%s}' % cinesync.SESSION_V3_NAMESPACE
 def session_to_xml(sess):
     if not sess.is_valid():
         raise cinesync.InvalidError('Cannot convert an invalid session to XML')
-    return '<?xml version="1.0" ?><session xmlns="%s"></session>' % cinesync.SESSION_V3_NAMESPACE
+    return '<?xml version="1.0" ?><session xmlns="%s" version="%d"></session>' % (cinesync.SESSION_V3_NAMESPACE, cinesync.SESSION_V3_XML_FILE_VERSION)
 
 
 def session_from_xml(str_or_file, silent=False):
