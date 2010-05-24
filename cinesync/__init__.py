@@ -43,12 +43,14 @@ SESSION_V3_NAMESPACE = 'http://www.cinesync.com/ns/session/3.0'
 
 
 import os
+import sys
 import hashlib
 import struct
 
 from session import Session
 from media_file import MediaFile, GroupMovie, MediaLocator
 from frame_annotation import FrameAnnotation
+from event_handler import EventHandler
 import csc_xml
 
 
