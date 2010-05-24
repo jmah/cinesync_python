@@ -44,3 +44,18 @@ class EventHandlerTest(unittest.TestCase):
             with MockEnvironment(self.online_args, file):
                 cinesync.event_handler(my_handler)
         self.assertTrue(handler_run[0])
+
+    def test_parsing_args(self):
+        handler_run = [False]
+        def my_handler(evt):
+            self.assertFalse(evt.is_offline())
+            self.assertEqual(evt.session_key, 'ASDF0000')
+            self.assertEqual(evt.save_format, 'JPEG')
+            self.assertEqual(evt.save_parent, '/tmp/cinesync')
+            handler_run[0] = True
+
+        path = os.path.join('test', 'v3 files', 'v3-basic.csc')
+        with open(path) as file:
+            with MockEnvironment(self.online_args, file):
+                cinesync.event_handler(my_handler)
+        self.assertTrue(handler_run[0])
