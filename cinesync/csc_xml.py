@@ -27,6 +27,7 @@ def session_to_xml(sess):
     for grp_name in sess.groups:
         ET.SubElement(root, 'group').text = grp_name
     if sess.notes: ET.SubElement(root, 'notes').text = sess.notes
+    if sess.user_data: root.set('userData', sess.user_data)
     return ET.tostring(root, 'utf-8')
 
 
