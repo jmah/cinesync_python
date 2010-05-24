@@ -5,7 +5,6 @@ import unittest
 import sys
 import os
 import xml.etree.cElementTree as ET
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'lib')))
 
 import cinesync
 from cinesync.csc_xml import NS
