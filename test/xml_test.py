@@ -20,6 +20,7 @@ class XMLTest(unittest.TestCase):
         self.assertEqual(doc.tag, NS + 'session')
         self.assertEqual(int(doc.get('version')), cinesync.SESSION_V3_XML_FILE_VERSION)
         self.assertEqual(doc.get('sessionFeatures'), s.get_session_features())
+        self.assertEqual(doc.find(NS + 'notes'), None)
 
     def test_invalid_session_fails(self):
         s = cinesync.Session()
@@ -203,6 +204,12 @@ class XMLTest(unittest.TestCase):
         self.assertEqual(media_elems[0].findtext(NS + 'group'), mf.groups[0])
 
         self.assertEqual(len(media_elems[1].findall(NS + 'group')), 0)
+
+    def test_session_notes(self):
+        s = cinesync.Session()
+        s.notes = 'asdf'
+        doc = ET.fromstring(s.to_xml())
+        self.assertEqual(doc.findtext(NS + 'notes'), s.notes)
 
 
 if __name__ == '__main__':

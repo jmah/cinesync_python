@@ -26,6 +26,7 @@ def session_to_xml(sess):
         root.append(media_file.to_xml())
     for grp_name in sess.groups:
         ET.SubElement(root, 'group').text = grp_name
+    if sess.notes: ET.SubElement(root, 'notes').text = sess.notes
     return ET.tostring(root, 'utf-8')
 
 
