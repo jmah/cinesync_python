@@ -4,15 +4,20 @@ import unittest
 
 import sys
 import os
+import xml.etree.cElementTree as ET
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'lib')))
 
 import cinesync
+from cinesync.csc_xml import NS
 
 
 class XMLTest(unittest.TestCase):
     def test_empty_session(self):
         s = cinesync.Session()
-        self.assertTrue(s.to_xml())
+        xml = s.to_xml()
+        self.assertTrue(xml)
+        doc = ET.fromstring(xml)
+        self.assertEqual(doc.tag, NS + 'session')
 
     def test_invalid_session_fails(self):
         s = cinesync.Session()
