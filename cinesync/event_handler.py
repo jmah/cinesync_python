@@ -26,7 +26,7 @@ class EventHandler:
         self.url = options.url
 
     def is_offline(self):
-        self.session_key == None
+        return self.session_key == None
 
     def __enter__(self):
         return self
