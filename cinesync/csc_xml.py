@@ -112,4 +112,6 @@ def locator_to_xml(loc):
         raise cinesync.InvalidError('Cannot convert an invalid locator to XML')
     elem = ET.Element('locators')
     if loc.path: ET.SubElement(elem, 'path').text = loc.path
+    if loc.short_hash: ET.SubElement(elem, 'shortHash').text = loc.short_hash
+    if loc.url: ET.SubElement(elem, 'url').text = loc.url
     return elem

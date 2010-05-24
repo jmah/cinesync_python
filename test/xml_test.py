@@ -156,6 +156,32 @@ class XMLTest(unittest.TestCase):
         path_elem = media_elem.find('.//%slocators/%spath' % (NS, NS))
         self.assertEqual(path_elem.text, path)
 
+    def test_writing_short_hash_locator(self):
+        s = cinesync.Session()
+        path = '/Volumes/Oyama/Streams/cineSync Test Files/movies/nasa_shuttle_m420p.mov'
+        mf = cinesync.MediaFile(path)
+        s.media.append(mf)
+
+        doc = ET.fromstring(s.to_xml())
+        media_elem = doc.find(NS + 'media')
+        loc_elem = media_elem.find(NS + 'locators')
+        self.assertEqual(loc_elem.findtext(NS + 'path'), mf.locator.path)
+        self.assertEqual(loc_elem.findtext(NS + 'shortHash'), mf.locator.short_hash)
+        self.assertEqual(loc_elem.findtext(NS + 'url'), None)
+
+    def test_writing_url_locator(self):
+        s = cinesync.Session()
+        url = 'http://example.com/random_file.mov'
+        mf = cinesync.MediaFile(url)
+        s.media.append(mf)
+
+        doc = ET.fromstring(s.to_xml())
+        media_elem = doc.find(NS + 'media')
+        loc_elem = media_elem.find(NS + 'locators')
+        self.assertEqual(loc_elem.findtext(NS + 'path'), None)
+        self.assertEqual(loc_elem.findtext(NS + 'shortHash'), None)
+        self.assertEqual(loc_elem.findtext(NS + 'url'), mf.locator.url)
+
 
 if __name__ == '__main__':
     unittest.main()
