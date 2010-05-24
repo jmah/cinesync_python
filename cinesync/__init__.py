@@ -44,10 +44,7 @@ OFFLINE_KEY = '_OFFLINE_'
 SESSION_V3_NAMESPACE = 'http://www.cinesync.com/ns/session/3.0'
 
 
-import os
-import sys
-import hashlib
-import struct
+import os, sys, platform, subprocess, hashlib, struct
 
 from session import Session
 from media_file import MediaFile, GroupMovie, MediaLocator
@@ -78,3 +75,10 @@ def short_hash(path):
             f.seek(-SHORT_HASH_SAMPLE_SIZE / 2, os.SEEK_END)
             dgst.update(f.read(SHORT_HASH_SAMPLE_SIZE / 2))
         return dgst.hexdigest()
+
+def open_url(url):
+	system = platform.system()
+	if system == 'Darwin':
+		subprocess.call(['open', url])
+	elif system == 'Windows':
+		subprocess.call(['cmd', '/c', 'start', '', '/b', url])
