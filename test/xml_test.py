@@ -164,7 +164,6 @@ class XMLTest(unittest.TestCase):
         self.assertEqual(len(doc.findall(NS + 'media')), len(s.media))
         self.assertEqual(len(doc.findall(NS + 'group')), len(s.groups))
         self.assertEqual(len(doc.find(NS + 'media').findall(NS + 'annotation')), 13)
-        first_ann_elem = doc.find(NS + 'media').find(NS + 'annotation')
 
     def test_writing_basic(self):
         s = cinesync.Session()
