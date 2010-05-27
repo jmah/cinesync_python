@@ -3,7 +3,13 @@ import cinesync.media_file
 import sys
 import types
 from StringIO import StringIO
-import xml.etree.cElementTree as ET
+
+try:
+    from lxml import etree as ET
+    USING_LXML = True
+except ImportError:
+    import xml.etree.cElementTree as ET
+    USING_LXML = False
 
 NS = '{%s}' % cinesync.SESSION_V3_NAMESPACE
 DRAWING_OBJECT_TAGS = ['line', 'erase', 'circle', 'arrow', 'text']
@@ -29,7 +35,10 @@ def session_to_xml(sess):
         ET.SubElement(root, 'group').text = grp_name
     if sess.notes: ET.SubElement(root, 'notes').text = sess.notes
     if sess.user_data: root.set('userData', sess.user_data)
-    return ET.tostring(root, 'utf-8')
+    if USING_LXML:
+        return ET.tostring(root, xml_declaration=True, encoding='utf-8', pretty_print=True)
+    else:
+        return ET.tostring(root, 'utf-8')
 
 
 def session_from_xml(str_or_file, silent=False):
@@ -64,7 +73,7 @@ def session_from_xml(str_or_file, silent=False):
 #   ePlayRange?
 
 def media_from_xml(elem):
-    return group_movie_from_xml(elem) if elem.find(NS + 'groupMovie') else media_file_from_xml(elem)
+    return group_movie_from_xml(elem) if elem.find(NS + 'groupMovie') is not None else media_file_from_xml(elem)
 
 def init_media_common(elem, media_obj):
     media_obj.user_data = elem.get('userData') or ''
