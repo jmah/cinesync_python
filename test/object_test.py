@@ -2,8 +2,8 @@
 
 import unittest
 
-import sys
-import os
+import sys, os
+import ntpath
 
 import cinesync
 
@@ -209,7 +209,7 @@ class MediaLocatorTest(unittest.TestCase):
 
     def test_dos_file_locator(self):
         path = r'C:\path\to\myMovie.mov'
-        ml = cinesync.MediaLocator(path)
+        ml = cinesync.MediaLocator(path, ntpath)
         self.assertTrue(ml.is_valid())
         self.assertEqual(ml.path, path)
         self.assertTrue(ml.url is None)
@@ -222,6 +222,12 @@ class MediaLocatorTest(unittest.TestCase):
         self.assertTrue(ml.path is None)
         self.assertTrue(ml.url is None)
         self.assertEqual(ml.short_hash, hash)
+
+    def test_relative_path_conversion(self):
+        rel_path = '../nonexist-test.mov'
+        abs_path = os.path.abspath(rel_path)
+        ml = cinesync.MediaLocator(rel_path)
+        self.assertEqual(ml.path, abs_path)
 
 
 class SessionMediaTest(unittest.TestCase):

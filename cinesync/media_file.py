@@ -24,13 +24,13 @@ class MediaBase:
 
 
 class MediaFile(MediaBase):
-    def __init__(self, locator_arg=None):
+    def __init__(self, locator_arg=None, path_module=os.path):
         MediaBase.__init__(self)
-        self.locator = MediaLocator(locator_arg)
+        self.locator = MediaLocator(locator_arg, path_module)
         self.name = ''
         if self.locator and (self.locator.path or self.locator.url):
             s = self.locator.path or self.locator.url
-            self.name = os.path.basename(urlparse(s).path)
+            self.name = path_module.basename(urlparse(s).path)
         self.notes = ''
         self.annotations = MediaAnnotations()
 
@@ -70,7 +70,7 @@ class GroupMovie(MediaBase):
 
 
 class MediaLocator:
-    def __init__(self, path_or_url_or_hash=None):
+    def __init__(self, path_or_url_or_hash=None, path_module=os.path):
         self.path = None
         self.url = None
         self.short_hash = None
@@ -79,8 +79,8 @@ class MediaLocator:
         if s:
             maybe_url = urlparse(s)
 
-            if os.path.exists(s):
-                self.path = s
+            if path_module.exists(s):
+                self.path = path_module.abspath(s)
                 self.short_hash = cinesync.short_hash(self.path)
             elif maybe_url and maybe_url.scheme and maybe_url.hostname:
                 # The argument could be parsed as a URI (use it as a URL)
@@ -90,7 +90,7 @@ class MediaLocator:
                 self.short_hash = s
             else:
                 # Finally, assume it's a file path
-                self.path = s
+                self.path = path_module.abspath(s)
 
     def is_valid(self):
         return any([self.path, self.url, self.short_hash])
