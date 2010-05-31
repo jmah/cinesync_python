@@ -79,8 +79,8 @@ def short_hash(path):
         return dgst.hexdigest()
 
 def open_url(url):
-	system = platform.system()
-	if system == 'Darwin':
-		subprocess.call(['open', url])
-	elif system == 'Windows':
-		subprocess.call(['cmd', '/c', 'start', '', '/b', url])
+    system = platform.system()
+    if system == 'Darwin':
+        subprocess.call(['open', url])
+    elif system == 'Windows':
+        subprocess.call(['cmd', '/c', 'start', '', '/b', url])
