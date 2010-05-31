@@ -1,0 +1,165 @@
+# ==== Namespace ====
+default namespace csc = "http://www.cinesync.com/ns/session/3.0"
+
+# ==== Data types ====
+tBool           = "true" | "false"
+tPositiveFloat  = xsd:float { minExclusive = "0" }
+tFrameNumber    = xsd:integer { minInclusive = "1" }
+tAlpha          = xsd:float { minInclusive = "0" maxInclusive = "1" }
+tColorOff       = xsd:float { minInclusive = "-0.2" maxInclusive = "0.2" }
+tColorExp       = xsd:float { minInclusive = "0.367879" maxInclusive = "2.718282" } # exp(-1) .. exp(1)
+tUnitFloat      = xsd:float { minInclusive = "-1" maxInclusive = "1" }
+tColor          = xsd:string { pattern = "#[0-9a-fA-F]{6}" }
+tShortHash      = xsd:string { length = "40" }
+tFilePath       = xsd:string { minLength = "1" }
+tURL            = xsd:string { minLength = "1" }
+tStereoType     = "side-by-side" | "composite" | "interlaced"
+tPoint          = xsd:float
+
+
+# ==== Session format ====
+start = eSession
+
+eSession = element session {
+  attribute version { xsd:integer { minInclusive = "3" } } &
+  attribute sessionFeatures { "standard" | "pro" } &
+  attribute hashToken { string }? &
+  aUserData? &
+  eGroup* &
+  eNotes? &
+  eChat? &
+  eStereo? &
+  eMedia* }
+
+MediaBase =
+  aUserData? &
+  attribute active { tBool }? &
+  attribute currentFrame { tFrameNumber }? &
+  eGroup* &
+  ePlayRange?
+
+eMedia |= element media {
+  # Normal media file
+  MediaBase &
+  element name { xsd:string { minLength = "1" } } &
+  element locators { eLocator+ } &
+  eNotes? &
+  eZoomState? &
+  ePixelRatio? &
+  eMask? &
+  eColorGrading? &
+  eFrameAnnotation* }
+
+eMedia |= element media {
+  # Group movie
+  MediaBase &
+  element groupMovie { eGroup } }
+
+eLocator |= element path       { tFilePath }
+eLocator |= element shortHash  { tShortHash }
+eLocator |= element url        { tURL }
+
+ePlayRange = element playRange {
+  element inFrame       { attribute value { tFrameNumber } } &
+  element outFrame      { attribute value { tFrameNumber } } &
+  element playOnlyRange { aBoolValue } }
+
+eZoomState = element zoomState {
+  element center { aXY } &
+  eScaleFactor }
+
+ePixelRatio = element pixelRatio {
+  element source { aRatio } &
+  element target { aRatio } }
+
+eMask = element mask {
+  aAlpha &
+  element center { aXY } &
+  element ratio { aRatio } &
+  eScaleFactor }
+
+eNotes = element notes { text }
+
+# Chat history, URL-encoded (and then XML encoded)
+eChat = element chat { text }
+
+eStereo = element stereo {
+  attribute enabled { tBool } &
+  attribute type    { tStereoType } &
+  element anamorphic    { aBoolValue }? &
+  element anaglyph      { aBoolValue }? &
+  element grayscale     { aBoolValue }? &
+  element separation {
+    attribute annotation  { tUnitFloat } &
+    attribute image       { tUnitFloat } }? }
+
+eColorGrading = element colorGrading {
+  element offset {
+    attribute red       { tColorOff } &
+    attribute green     { tColorOff } &
+    attribute blue      { tColorOff } }? &
+
+  element brightness {
+    attribute rgb       { tColorExp } &
+    attribute red       { tColorExp } &
+    attribute green     { tColorExp } &
+    attribute blue      { tColorExp } }? &
+
+  element saturation  { attribute value { tColorExp } }? &
+  element gamma       { attribute value { tColorExp } }? &
+  element contrast    { attribute value { tColorExp } }? &
+
+  element linearToLog { aBoolValue }? &
+  element lutPath     { attribute value { tFilePath } }? }
+
+
+# ==== Frame annotations ====
+eFrameAnnotation = element annotation {
+  attribute frame { tFrameNumber } &
+  eNotes? &
+  eObject* }
+
+eObject |= element line    { aObjectID? & aAlphaColor & LinePath }
+eObject |= element erase   { aObjectID? & ErasePath }
+eObject |= element circle  { aObjectID? & aAlphaColor & Rect }
+eObject |= element arrow {
+  aObjectID? &
+  aAlphaColor &
+  Rect &
+  element special   { aBoolValue }? &
+  element flipSide  { aBoolValue }? &
+  element reverse   { aBoolValue }? }
+
+eObject |= element text {
+  aObjectID? &
+  Rect &
+  element background  { aAlphaColor } &
+  element foreground  { aAlphaColor } &
+  element p { text } }
+
+
+# ==== Components ====
+aAlpha       = attribute alpha    { tAlpha }
+aAlphaColor  = attribute color    { tColor } & aAlpha
+aBoolValue   = attribute value    { tBool }
+aObjectID    = attribute id       { xsd:string { minLength = "1" } }
+aUserData    = attribute userData { text }
+eGroup       = element group      { xsd:string { minLength = "1" } }
+eScaleFactor = element scaleFactor { attribute value { tPositiveFloat } }
+
+aRatio  &= attribute width  { tPositiveFloat }
+aRatio  &= attribute height { tPositiveFloat }
+
+aXY &= attribute x  { tPoint }
+aXY &= attribute y  { tPoint }
+
+
+# ==== Object components ====
+LinePath  &= attribute thickness { tPositiveFloat }
+LinePath  &= element point { aXY & aAlpha? }+
+
+ErasePath &= attribute thickness { tPositiveFloat }
+ErasePath &= element point { aXY }+
+
+Rect  &= element startPoint { aXY }
+Rect  &= element endPoint   { aXY }
