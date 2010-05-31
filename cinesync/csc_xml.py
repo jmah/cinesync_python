@@ -15,10 +15,12 @@ NS = '{%s}' % cinesync.SESSION_V3_NAMESPACE
 DRAWING_OBJECT_TAGS = ['line', 'erase', 'circle', 'arrow', 'text']
 
 
+# Modifies its argument in-place
 def strip_namespace(elem):
     for e in elem.getiterator():
         if e.tag.startswith(NS):
             e.tag = e.tag[len(NS):]
+    return elem
 
 
 # eSession = element session {
@@ -36,13 +38,9 @@ def session_to_xml(session):
                       version=str(cinesync.SESSION_V3_XML_FILE_VERSION),
                       sessionFeatures=session.get_session_features())
     if session.chat_elem is not None:
-        chat_elem = session.chat_elem
-        strip_namespace(chat_elem)
-        root.append(chat_elem)
+        root.append(strip_namespace(session.chat_elem))
     if session.stereo_elem is not None:
-        stereo_elem = session.stereo_elem
-        strip_namespace(stereo_elem)
-        root.append(stereo_elem)
+        root.append(strip_namespace(session.stereo_elem))
     for media_file in session.media:
         root.append(media_file.to_xml())
     for grp_name in session.groups:
@@ -222,8 +220,7 @@ def frame_annotation_from_xml(elem):
     ann.notes = elem.findtext(NS + 'notes') or ''
     for tag in DRAWING_OBJECT_TAGS:
         for draw_elem in elem.findall(NS + tag):
-            strip_namespace(draw_elem)
-            ann.drawing_objects.append(draw_elem)
+            ann.drawing_objects.append(strip_namespace(draw_elem))
     return ann
 
 def frame_annotation_to_xml(ann):
