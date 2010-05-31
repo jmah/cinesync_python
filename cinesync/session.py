@@ -7,9 +7,12 @@ class Session:
         self.media = []
         self.groups = []
         self.notes = ''
+        self.chat_elem = None
+        self.stereo_elem = None
 
     def get_session_features(self):
-        return 'pro' if any([m.uses_pro_features() for m in self.media]) else 'standard'
+        return 'pro' if any([m.uses_pro_features() for m in self.media]) \
+                        or (self.stereo_elem is not None) else 'standard'
 
     def is_valid(self):
         return self.file_version == cinesync.SESSION_V3_XML_FILE_VERSION and \

@@ -15,6 +15,12 @@ NS = '{%s}' % cinesync.SESSION_V3_NAMESPACE
 DRAWING_OBJECT_TAGS = ['line', 'erase', 'circle', 'arrow', 'text']
 
 
+def strip_namespace(elem):
+    for e in elem.getiterator():
+        if e.tag.startswith(NS):
+            e.tag = e.tag[len(NS):]
+
+
 # eSession = element session {
 #   attribute version { xsd:integer { minInclusive = "3" } } &
 #   attribute sessionFeatures { "standard" | "pro" } &
@@ -29,6 +35,14 @@ def session_to_xml(session):
     root = ET.Element('session', xmlns=cinesync.SESSION_V3_NAMESPACE,
                       version=str(cinesync.SESSION_V3_XML_FILE_VERSION),
                       sessionFeatures=session.get_session_features())
+    if session.chat_elem is not None:
+        chat_elem = session.chat_elem
+        strip_namespace(chat_elem)
+        root.append(chat_elem)
+    if session.stereo_elem is not None:
+        stereo_elem = session.stereo_elem
+        strip_namespace(stereo_elem)
+        root.append(stereo_elem)
     for media_file in session.media:
         root.append(media_file.to_xml())
     for grp_name in session.groups:
@@ -61,6 +75,8 @@ def session_from_xml(str_or_file, silent=False):
     session.user_data = elem.get('userData') or ''
     session.groups = [grp.text for grp in elem.findall(NS + 'group')]
     session.notes = elem.findtext(NS + 'notes') or ''
+    session.chat_elem = elem.find(NS + 'chat')
+    session.stereo_elem = elem.find(NS + 'stereo')
     session.media = [cinesync.media_file.MediaBase.load(media_elem) for media_elem in elem.findall(NS + 'media')]
     return session
 
@@ -151,10 +167,7 @@ def frame_annotation_from_xml(elem):
     ann.notes = elem.findtext(NS + 'notes') or ''
     for tag in DRAWING_OBJECT_TAGS:
         for draw_elem in elem.findall(NS + tag):
-            # Strip namespace prefix from drawing element and children
-            for e in draw_elem.getiterator():
-                if e.tag.startswith(NS):
-                    e.tag = e.tag[len(NS):]
+            strip_namespace(draw_elem)
             ann.drawing_objects.append(draw_elem)
     return ann
 
