@@ -285,5 +285,16 @@ class XMLTest(unittest.TestCase):
         self.assertEqual(pr_elem.find(NS + 'outFrame').get('value'), str(99))
         self.assertEqual(pr_elem.find(NS + 'playOnlyRange').get('value'), 'true')
 
+    def test_writing_group_movie(self):
+        path = os.path.join('test', 'v3 files', 'v3-refmovie.csc')
+        with open(path) as file:
+            s = cinesync.Session.load(file)
+
+        doc = ET.fromstring(s.to_xml())
+        media_elem = doc.findall(NS + 'media')[2]
+        self.assertTrue(media_elem.find(NS + 'groupMovie') is not None)
+        group = media_elem.find(NS + 'groupMovie').findtext(NS + 'group')
+        self.assertEqual(group, s.media[2].group)
+
 if __name__ == '__main__':
     unittest.main()

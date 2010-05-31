@@ -101,6 +101,30 @@ def init_media_common(elem, media_obj):
     if play_range_elem is not None:
         media_obj.play_range = cinesync.PlayRange.load(play_range_elem)
 
+def media_base_to_xml(media):
+    elem = ET.Element('media')
+    if media.user_data: elem.set('userData', media.user_data)
+    if media.active: elem.set('active', 'true')
+    if media.current_frame != 1: elem.set('currentFrame', media.current_frame)
+    if not media.play_range.is_default(): elem.append(media.play_range.to_xml())
+
+    for group_name in media.groups:
+        ET.SubElement(elem, 'group').text = group_name
+    return elem
+
+
+# eMedia |= element media {
+#   # Normal media file
+#   MediaBase &
+#   element name { xsd:string { minLength = "1" } } &
+#   element locators { eLocator+ } &
+#   eNotes? &
+#   eZoomState? &
+#   ePixelRatio? &
+#   eMask? &
+#   eColorGrading? &
+#   eFrameAnnotation* }
+
 def media_file_from_xml(elem):
     mf = cinesync.MediaFile()
     init_media_common(elem, mf)
@@ -113,22 +137,6 @@ def media_file_from_xml(elem):
         mf.annotations[frame] = cinesync.FrameAnnotation.load(ann_elem)
     return mf
 
-def group_movie_from_xml(elem):
-    gm = cinesync.GroupMovie(elem.findtext(NS + 'groupMovie/' + NS + 'group'))
-    init_media_common(elem, gm)
-    return gm
-
-def media_base_to_xml(media):
-    elem = ET.Element('media')
-    if media.user_data: elem.set('userData', media.user_data)
-    if media.active: elem.set('active', 'true')
-    if media.current_frame != 1: elem.set('currentFrame', media.current_frame)
-    if not media.play_range.is_default(): elem.append(media.play_range.to_xml())
-
-    for group_name in media.groups:
-        ET.SubElement(elem, 'group').text = group_name
-    return elem
-
 def media_file_to_xml(mf):
     elem = media_base_to_xml(mf)
     ET.SubElement(elem, 'name').text = mf.name
@@ -137,6 +145,23 @@ def media_file_to_xml(mf):
     for ann in mf.annotations.values():
         if not ann.is_default():
             elem.append(ann.to_xml())
+    return elem
+
+
+# eMedia |= element media {
+#   # Group movie
+#   MediaBase &
+#   element groupMovie { eGroup } }
+
+def group_movie_from_xml(elem):
+    gm = cinesync.GroupMovie(elem.findtext(NS + 'groupMovie/' + NS + 'group'))
+    init_media_common(elem, gm)
+    return gm
+
+def group_movie_to_xml(gm):
+    elem = media_base_to_xml(gm)
+    gm_elem = ET.SubElement(elem, 'groupMovie')
+    ET.SubElement(gm_elem, 'group').text = gm.group
     return elem
 
 
