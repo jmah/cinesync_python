@@ -133,16 +133,33 @@ def media_file_from_xml(elem):
     for ann_elem in elem.findall(NS + 'annotation'):
         frame = int(ann_elem.get('frame'))
         mf.annotations[frame] = cinesync.FrameAnnotation.load(ann_elem)
+
+    mf.zoom_state_elem = elem.find(NS + 'zoomState')
+    mf.pixel_ratio_elem = elem.find(NS + 'pixelRatio')
+    mf.mask_elem = elem.find(NS + 'mask')
+    mf.color_grading_elem = elem.find(NS + 'colorGrading')
+
     return mf
 
 def media_file_to_xml(mf):
     elem = media_base_to_xml(mf)
     ET.SubElement(elem, 'name').text = mf.name
     elem.append(locator_to_xml(mf.locator))
+
     if mf.notes: ET.SubElement(elem, 'notes').text = mf.notes
     for ann in mf.annotations.values():
         if not ann.is_default():
             elem.append(ann.to_xml())
+
+    if mf.zoom_state_elem is not None:
+        elem.append(strip_namespace(mf.zoom_state_elem))
+    if mf.pixel_ratio_elem is not None:
+        elem.append(strip_namespace(mf.pixel_ratio_elem))
+    if mf.mask_elem is not None:
+        elem.append(strip_namespace(mf.mask_elem))
+    if mf.color_grading_elem is not None:
+        elem.append(strip_namespace(mf.color_grading_elem))
+
     return elem
 
 

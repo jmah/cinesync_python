@@ -296,5 +296,16 @@ class XMLTest(unittest.TestCase):
         group = media_elem.find(NS + 'groupMovie').findtext(NS + 'group')
         self.assertEqual(group, s.media[2].group)
 
+    def test_preserving_pro_features(self):
+        path = os.path.join('test', 'v3 files', 'v3-pro.csc')
+        with open(path) as file:
+            s = cinesync.Session.load(file)
+        doc = ET.ElementTree(ET.fromstring(s.to_xml()))
+        self.assertEqual(doc.getroot().get('sessionFeatures'), 'pro')
+        self.assertEqual(len(doc.findall('//' + NS + 'zoomState')), 2)
+        self.assertEqual(len(doc.findall('//' + NS + 'pixelRatio')), 3)
+        self.assertEqual(len(doc.findall('//' + NS + 'mask')), 2)
+        self.assertEqual(len(doc.findall('//' + NS + 'colorGrading')), 3)
+
 if __name__ == '__main__':
     unittest.main()

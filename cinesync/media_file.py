@@ -35,6 +35,15 @@ class MediaFile(MediaBase):
         self.notes = ''
         self.annotations = MediaAnnotations()
 
+        self.zoom_state_elem = None
+        self.pixel_ratio_elem = None
+        self.mask_elem = None
+        self.color_grading_elem = None
+
+    def uses_pro_features(self):
+        return MediaBase.uses_pro_features(self) or any([elem is not None for elem \
+                in [self.zoom_state_elem, self.pixel_ratio_elem, self.mask_elem, self.color_grading_elem]])
+
     def is_valid(self):
         return MediaBase.is_valid(self) and \
                self.locator and self.locator.is_valid() and \
