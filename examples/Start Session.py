@@ -14,4 +14,4 @@ session = cinesync.Session()
 session.media = [cinesync.MediaFile(path) for path in sys.argv[1:]]
 
 # Ask cineSync to add the session to its current state
-cinesync.commands.do_open_session(session)
+cinesync.commands.open_session(session)
