@@ -23,18 +23,18 @@ DRAWING_OBJECT_TAGS = ['line', 'erase', 'circle', 'arrow', 'text']
 #   eNotes? &
 #   eMedia* }
 
-def session_to_xml(sess):
-    if not sess.is_valid():
+def session_to_xml(session):
+    if not session.is_valid():
         raise cinesync.InvalidError('Cannot convert an invalid session to XML')
     root = ET.Element('session', xmlns=cinesync.SESSION_V3_NAMESPACE,
                       version=str(cinesync.SESSION_V3_XML_FILE_VERSION),
-                      sessionFeatures=sess.get_session_features())
-    for media_file in sess.media:
+                      sessionFeatures=session.get_session_features())
+    for media_file in session.media:
         root.append(media_file.to_xml())
-    for grp_name in sess.groups:
+    for grp_name in session.groups:
         ET.SubElement(root, 'group').text = grp_name
-    if sess.notes: ET.SubElement(root, 'notes').text = sess.notes
-    if sess.user_data: root.set('userData', sess.user_data)
+    if session.notes: ET.SubElement(root, 'notes').text = session.notes
+    if session.user_data: root.set('userData', session.user_data)
     if USING_LXML:
         return ET.tostring(root, xml_declaration=True, encoding='utf-8', pretty_print=True)
     else:
