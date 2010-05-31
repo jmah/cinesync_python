@@ -11,12 +11,13 @@ class MediaBase:
         self.active = False
         self.current_frame = 1
         self.groups = []
+        self.play_range = cinesync.PlayRange()
 
     def uses_pro_features(self):
         return False
 
     def is_valid(self):
-        return (self.current_frame >= 1)
+        return (self.current_frame >= 1) and self.play_range.is_valid()
 
     @classmethod
     def load(cls, elem):

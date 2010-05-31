@@ -46,6 +46,10 @@ class XMLTest(unittest.TestCase):
         self.assertEqual(s.media[0].current_frame, 1)
         self.assertEqual(s.media[0].user_data, '')
         self.assertEqual(s.media[0].groups, [])
+        pr0 = s.media[0].play_range
+        self.assertEqual(pr0.in_frame, 40)
+        self.assertEqual(pr0.out_frame, 50)
+        self.assertTrue(pr0.play_only_range)
 
         self.assertTrue(s.media[1].is_valid())
         self.assertEqual(s.media[1].name, 'sample_mpeg4.mp4')
@@ -55,6 +59,10 @@ class XMLTest(unittest.TestCase):
         self.assertEqual(s.media[1].current_frame, 65)
         self.assertEqual(s.media[1].user_data, '')
         self.assertEqual(s.media[1].groups, [])
+        pr1 = s.media[1].play_range
+        self.assertEqual(pr1.in_frame, 62)
+        self.assertEqual(pr1.out_frame, 67)
+        self.assertTrue(pr1.play_only_range)
 
         self.assertTrue(s.media[2].is_valid())
         self.assertEqual(s.media[2].name, 'Test_MH 2fps.mov')
@@ -66,6 +74,9 @@ class XMLTest(unittest.TestCase):
         self.assertEqual(s.media[2].notes, 'These notes on the last movie.')
         self.assertEqual(s.media[2].annotations[1].notes, 'This is a note on the first frame of the last movie.')
         self.assertEqual(s.media[2].annotations[88].notes, '')
+        self.assertEqual(s.media[2].play_range.in_frame, None)
+        self.assertEqual(s.media[2].play_range.out_frame, None)
+        self.assertTrue(s.media[2].play_range.play_only_range)
 
     def test_loading_group_movie(self):
         path = os.path.join('test', 'v3 files', 'v3-refmovie.csc')
@@ -258,6 +269,21 @@ class XMLTest(unittest.TestCase):
         self.assertEqual(ann_elem.get('frame'), str(33))
         self.assertEqual(ann_elem.findtext(NS + 'notes'), 'A note on frame 33')
 
+    def test_writing_play_range(self):
+        s = cinesync.Session()
+        mf = cinesync.MediaFile('http://example.com/random_file.mov')
+        self.assertTrue(mf.play_range.is_valid())
+        mf.play_range.in_frame = 55
+        self.assertFalse(mf.play_range.is_valid())
+        mf.play_range.out_frame = 99
+        self.assertTrue(mf.play_range.is_valid())
+        s.media.append(mf)
+
+        doc = ET.fromstring(s.to_xml())
+        pr_elem = doc.find(NS + 'media').find(NS + 'playRange')
+        self.assertEqual(pr_elem.find(NS + 'inFrame').get('value'), str(55))
+        self.assertEqual(pr_elem.find(NS + 'outFrame').get('value'), str(99))
+        self.assertEqual(pr_elem.find(NS + 'playOnlyRange').get('value'), 'true')
 
 if __name__ == '__main__':
     unittest.main()

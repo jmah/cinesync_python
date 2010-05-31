@@ -49,6 +49,7 @@ import os, sys, platform, subprocess, hashlib, struct
 from session import Session
 from media_file import MediaFile, GroupMovie, MediaLocator
 from frame_annotation import FrameAnnotation
+from play_range import PlayRange
 from event_handler import EventHandler
 import csc_xml
 

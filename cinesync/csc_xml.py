@@ -97,6 +97,10 @@ def init_media_common(elem, media_obj):
     media_obj.groups = [grp.text for grp in elem.findall(NS + 'group')]
     media_obj.current_frame = int(elem.get('currentFrame') or 1)
 
+    play_range_elem = elem.find(NS + 'playRange')
+    if play_range_elem is not None:
+        media_obj.play_range = cinesync.PlayRange.load(play_range_elem)
+
 def media_file_from_xml(elem):
     mf = cinesync.MediaFile()
     init_media_common(elem, mf)
@@ -119,6 +123,7 @@ def media_base_to_xml(media):
     if media.user_data: elem.set('userData', media.user_data)
     if media.active: elem.set('active', 'true')
     if media.current_frame != 1: elem.set('currentFrame', media.current_frame)
+    if not media.play_range.is_default(): elem.append(media.play_range.to_xml())
 
     for group_name in media.groups:
         ET.SubElement(elem, 'group').text = group_name
@@ -153,6 +158,31 @@ def locator_to_xml(loc):
     if loc.path: ET.SubElement(elem, 'path').text = loc.path
     if loc.short_hash: ET.SubElement(elem, 'shortHash').text = loc.short_hash
     if loc.url: ET.SubElement(elem, 'url').text = loc.url
+    return elem
+
+
+# ePlayRange = element playRange {
+#   element inFrame       { attribute value { tFrameNumber } } &
+#   element outFrame      { attribute value { tFrameNumber } } &
+#   element playOnlyRange { aBoolValue } }
+
+def play_range_from_xml(elem):
+    play_range = cinesync.PlayRange()
+    play_range.in_frame = int(elem.find(NS + 'inFrame').get('value'))
+    play_range.out_frame = int(elem.find(NS + 'outFrame').get('value'))
+    play_range.play_only_range = elem.find(NS + 'playOnlyRange').get('value') == 'true'
+    return play_range
+
+def play_range_to_xml(play_range):
+    if not play_range.is_valid():
+        raise cinesync.InvalidError('Cannot convert an invalid play range to XML')
+    if play_range.is_default():
+        return None
+    elem = ET.Element('playRange')
+    ET.SubElement(elem, 'inFrame').set('value', str(play_range.in_frame))
+    ET.SubElement(elem, 'outFrame').set('value', str(play_range.out_frame))
+    only = 'true' if play_range.play_only_range else 'false'
+    ET.SubElement(elem, 'playOnlyRange').set('value', only)
     return elem
 
 
