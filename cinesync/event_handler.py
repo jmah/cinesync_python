@@ -31,6 +31,7 @@ class EventHandler:
 
     def saved_frame_path(self, media_file, frame):
         if self.save_parent is None: return None
+        if not media_file.annotations[frame].drawing_objects: return None
 
         base = '%s-%05d' % (media_file.name, frame)
         i = 1; p2 = None
