@@ -1,5 +1,6 @@
-import cinesync
+from __future__ import with_statement
 
+import cinesync
 import os, sys, urllib, re, tempfile
 
 
