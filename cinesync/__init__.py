@@ -52,6 +52,7 @@ from frame_annotation import FrameAnnotation
 from play_range import PlayRange
 from event_handler import EventHandler
 import csc_xml
+import commands
 
 
 class CineSyncError(Exception):
