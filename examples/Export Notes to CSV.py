@@ -7,10 +7,7 @@
 
 from __future__ import with_statement # For Python < 2.6
 
-import sys, os, csv
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-import cinesync
+import sys, os, csv, cinesync
 
 
 with cinesync.EventHandler() as evt:

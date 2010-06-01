@@ -1,9 +1,6 @@
 #!/usr/bin/python2.6
 
-import sys, os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-import cinesync
+import sys, os, cinesync
 
 if len(sys.argv) == 1:
     print >>sys.stderr, 'Usage: %s <file.mov> ...' % sys.argv[0]
