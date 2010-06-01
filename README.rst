@@ -25,7 +25,7 @@ Help and development
 ====================
 
 If you'd like to help out, you can fork the project
-at http://github.com/jmah/cinesync and report any bugs 
-at http://github.com/jmah/cinesync/issues.
+at http://github.com/jmah/cinesync_python and report any bugs
+at http://github.com/jmah/cinesync_python/issues.
 
 
