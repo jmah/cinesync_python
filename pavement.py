@@ -42,7 +42,7 @@ setup(
     name='cinesync',
     version=version,
     description='Library for scripting the cineSync collaborative video review tool',
-    long_description=open('README.rst', 'r').read(),
+    long_description='Visit the GitHub page at http://github.com/jmah/cinesync_python for documentation.',
     classifiers=classifiers,
     keywords='cinesync',
     author='Jonathon Mah',
