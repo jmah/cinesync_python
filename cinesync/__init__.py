@@ -35,7 +35,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 from __future__ import with_statement
 
 __author__ = 'Jonathon Mah <jmah@cinesync.com>'
-__version__ = '0.1'
+__version__ = '1.0'
 
 SESSION_V3_XML_FILE_VERSION = 3
 SHORT_HASH_SAMPLE_SIZE = 2048
