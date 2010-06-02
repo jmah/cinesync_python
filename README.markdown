@@ -33,6 +33,16 @@ Additionally, an external script can call a `cinesync:` URL, giving it the path 
 
 The cineSync API libraries (Ruby and Python) provide methods for manipulating and generating the session file format. From other languages, you can manipulate the XML structure directly.
 
+#### User Data
+
+A typical integration of cineSync into the production pipeline involves starting a session from shots in a database. Once the session is finished, any notes and annotations are saved back into the database and linked to the original shots. The production database typically refers to each file differently than cineSync does. cineSync tracks the path to each QuickTime movie, whereas the database might use a shot ID.
+
+To link notes from cineSync back to the shot in the database, you need to know this shot ID. The script that starts the session can store this as *user data*. This is a custom string that can be attached to each file in the playlist. When exporting from cineSync, an event handler script can use this to determine how to link everything back to the database.
+
+You can also attach user data to the session as a whole.
+
+User data is propagated to all clients in the session.
+
 ### Event Handler Environment
 
 When cineSync runs a script, it calls it with arguments describing the current environment: the session key, saved frame folder and format. The API provides a standard event handler block that parses these arguments and reads the session file, presenting them as native objects to the rest of the Ruby or Python script. See below for event handler examples.
