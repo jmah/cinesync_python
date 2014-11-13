@@ -1,5 +1,11 @@
 # cineSync Python Library
 
+## Notice: old and unsupported!
+
+**This repository is now deprecated and unsupported. Please instead use see the [downloads on the cineSync website](http://cinesync.com/downloads).**
+
+--
+
 ## Integration Overview
 
 ### Commands and Events
